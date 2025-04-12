@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'githubKey', url: 'git@github.com:RohitBN/devops.git']])
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], url: 'https://github.com/SommeanDev/honors_spring_devops.git')
             }
         }
         stage('Test') {
@@ -33,12 +33,12 @@ pipeline {
               }
             }
         }
-       stage('Deploy Artifacts') {
-            steps {
-                withEnv(['PATH+EXTRA=/usr/sbin:/usr/bin:/sbin:/bin']){
-                    sh 'scp -i "/Users/rohitnagbhidkar/.jenkins/ssh/devops_pair.pem" target/devops-0.0.1-SNAPSHOT.jar ec2-user@ec2-54-90-93-43.compute-1.amazonaws.com:/home/ec2-user'
-                }
-            }
-       }
+       // stage('Deploy Artifacts') {
+       //     steps {
+       //         withEnv(['PATH+EXTRA=/usr/sbin:/usr/bin:/sbin:/bin']){
+       //             sh 'scp -i "/Users/rohitnagbhidkar/.jenkins/ssh/devops_pair.pem" target/devops-0.0.1-SNAPSHOT.jar ec2-user@ec2-54-90-93-43.compute-1.amazonaws.com:/home/ec2-user'
+       //         }
+       //     }
+       // }
     }
 }
