@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "maven"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'githubKey', url: 'git@github.com:RohitBN/devops.git']])
+            }
+        }
+        stage('Test') {
+            steps {
+                withEnv(['PATH+EXTRA=/usr/sbin:/usr/bin:/sbin:/bin']){
+                sh 'mvn clean test'
+                }
+            }
+
+        }
+        stage('Build') {
+            steps {
+                withEnv(['PATH+EXTRA=/usr/sbin:/usr/bin:/sbin:/bin']){
+                sh 'mvn clean install -DskipTests'
+                }
+            }
+            post {
+
+            success {
+            archiveArtifacts 'target/*.jar'
+              }
+            }
+        }
+       stage('Deploy Artifacts') {
+            steps {
+                withEnv(['PATH+EXTRA=/usr/sbin:/usr/bin:/sbin:/bin']){
+                    sh 'scp -i "/Users/rohitnagbhidkar/.jenkins/ssh/devops_pair.pem" target/devops-0.0.1-SNAPSHOT.jar ec2-user@ec2-54-90-93-43.compute-1.amazonaws.com:/home/ec2-user'
+                }
+            }
+       }
+    }
+}
